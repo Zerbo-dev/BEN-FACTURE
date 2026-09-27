@@ -9,7 +9,7 @@ Client ──(Telegram)──► son bot ──► /api/webhook/<bot_id> ──�
                                          │                └─► PDF (react-pdf) + aperçu PNG ──► chat + canal privé du client
 Dashboard (Next.js) ──► /api/org, /api/preview, /api/bot/connect, /api/documents…
 Cron nuit ──► /api/cron/archive ──► Drive (.jsonl.gz + registre .csv) ──► allègement de la base
-```
+```jj
 
 ## Mise en route
 
