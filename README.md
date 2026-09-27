@@ -16,6 +16,9 @@ Cron nuit ──► /api/cron/archive ──► Drive (.jsonl.gz + registre .csv
 1. **Supabase** : créez un projet, exécutez `supabase/migrations/001_init.sql` (SQL Editor).
    *Authentication → URL Configuration* : Site URL = votre `APP_URL`, et ajoutez `APP_URL/dashboard` aux Redirect URLs.
    Copiez l'URL et les clés (anon + service_role).
+   **Pour tester en local sans configurer d'envoi d'e-mail** : *Authentication → Providers → Email* → désactivez
+   « Confirm email ». La connexion se fait par e-mail + mot de passe (pas de lien magique) : un compte créé est donc
+   utilisable immédiatement, sans qu'aucun e-mail ait besoin de partir.
 2. **Variables** : copiez `.env.example` vers `.env.local` et remplissez-le. `ENCRYPTION_KEY` : `openssl rand -base64 32`.
    `CRON_SECRET` : `openssl rand -hex 24`.
 3. **Local** : `npm install && npm run dev`. Telegram exige une URL https publique pour le webhook :
@@ -60,7 +63,15 @@ Les compteurs de numérotation ne sont jamais purgés. Les archives ne contienne
 - **Projet Supabase gratuit** : mis en pause après une période d'inactivité ; le cron quotidien génère de l'activité.
 - **Protection des données** : vous hébergez des données de vos clients et de leurs clients ; vérifiez vos obligations locales.
 
+## Forfait gratuit et restauration d'archive
+
+- **Quota** : `FREE_MONTHLY_LIMIT` (5 par défaut, dans `lib/meta.js`) documents/mois pour les organisations en `plan = 'free'`.
+  Vérifié dans le bot juste avant génération (le brouillon n'est pas perdu si la limite est atteinte). Passage en `plan = 'pro'`
+  (illimité) : à faire manuellement en base pour l'instant, aucune intégration Mobile Money automatisée n'est branchée —
+  l'onglet **Forfait** affiche un lien de contact optionnel (`NEXT_PUBLIC_UPGRADE_CONTACT_URL`).
+- **Restauration** : l'onglet Documents liste les mois archivés et permet de restaurer leur détail (bouton "Restaurer") :
+  télécharge le `.jsonl.gz` du mois, le décompresse, et redonne son `payload` à chaque document déjà archivé.
+
 ## Pas encore fait
 
-Restauration d'un mois archivé depuis le Drive (le format `.jsonl.gz` contient les lignes complètes de `documents`),
-quotas et facturation des abonnements, équipe multi-utilisateurs sur le dashboard, WhatsApp.
+Paiement Mobile Money automatisé (CinetPay/PayDunya), équipe multi-utilisateurs sur le dashboard, WhatsApp.

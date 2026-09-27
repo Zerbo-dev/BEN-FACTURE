@@ -13,7 +13,7 @@ export default function BotPanel({ org, onOrg }) {
   if (!org.bot_connected) {
     return (
       <section className="card stack">
-        <h2>Connectez votre bot Telegram</h2>
+        <div className="rule-head"><i /><h2>Connectez votre bot Telegram</h2></div>
         <p className="muted">Chaque entreprise a son propre bot : il porte votre nom et n'est utilisable que par vous.</p>
         <ol className="steps">
           <li>Ouvrez <a href="https://t.me/BotFather" target="_blank" rel="noreferrer">@BotFather</a> dans Telegram.</li>
@@ -33,7 +33,7 @@ export default function BotPanel({ org, onOrg }) {
   return (
     <>
       <section className="card stack">
-        <h2>Votre bot</h2>
+        <div className="rule-head"><i /><h2>Votre bot</h2></div>
         <Status on>Connecté : <a href={org.bot_link} target="_blank" rel="noreferrer">@{org.bot_username}</a></Status>
         <div className="row">
           <button className="btn danger" disabled={busy}
@@ -45,7 +45,7 @@ export default function BotPanel({ org, onOrg }) {
       </section>
 
       <section className="card stack">
-        <h2>Relier votre compte Telegram</h2>
+        <div className="rule-head"><i /><h2>Relier votre compte Telegram</h2></div>
         <Status on={org.authorized_count > 0}>{org.authorized_count > 0 ? `${org.authorized_count} compte(s) relié(s)` : "Aucun compte relié pour l'instant"}</Status>
         <p className="muted">Ouvrez le lien ci-dessous depuis Telegram et appuyez sur « Démarrer ». Il ne fonctionne qu'une fois : pour ajouter un collaborateur, générez-en un nouveau.</p>
         <div className="row">
@@ -55,7 +55,7 @@ export default function BotPanel({ org, onOrg }) {
       </section>
 
       <section className="card stack">
-        <h2>Sauvegarde des PDF (facultatif)</h2>
+        <div className="rule-head"><i /><h2>Sauvegarde des PDF (facultatif)</h2></div>
         <Status on={org.channel_connected}>{org.channel_connected ? "Canal connecté : chaque PDF y est conservé" : "Aucun canal connecté"}</Status>
         <ol className="steps">
           <li>Dans Telegram, créez un canal <b>privé</b>.</li>

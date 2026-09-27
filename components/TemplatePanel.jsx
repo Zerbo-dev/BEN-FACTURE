@@ -37,7 +37,7 @@ export default function TemplatePanel({ org, onOrg }) {
     <div className="studio">
       <div className="stack">
         <section className="card stack">
-          <h2>Modèle</h2>
+          <div className="rule-head"><i /><h2>Modèle</h2></div>
           <div className="choice">
             {TEMPLATE_META.map((t) => (
               <button key={t.id} type="button" aria-pressed={tpl === t.id} onClick={() => setTpl(t.id)}>
@@ -47,7 +47,7 @@ export default function TemplatePanel({ org, onOrg }) {
           </div>
         </section>
         <section className="card stack">
-          <h2>Couleurs</h2>
+          <div className="rule-head"><i /><h2>Couleurs</h2></div>
           <div className="palettes">
             {PALETTES.map((p) => (
               <button key={p.name} type="button" className="pal" aria-pressed={theme.primary === p.primary && theme.accent === p.accent}

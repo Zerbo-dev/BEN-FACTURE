@@ -5,8 +5,9 @@ import CompanyForm from "@/components/CompanyForm.jsx";
 import TemplatePanel from "@/components/TemplatePanel.jsx";
 import BotPanel from "@/components/BotPanel.jsx";
 import Documents from "@/components/Documents.jsx";
+import PlanPanel from "@/components/PlanPanel.jsx";
 
-const TABS = [["docs", "Documents"], ["company", "Entreprise"], ["model", "Modèle"], ["bot", "Bot Telegram"]];
+const TABS = [["docs", "Documents"], ["company", "Entreprise"], ["model", "Modèle"], ["bot", "Bot Telegram"], ["plan", "Forfait"]];
 
 export default function Dashboard() {
   const [org, setOrg] = useState(null);
@@ -40,7 +41,7 @@ export default function Dashboard() {
     <>
       <header className="topbar">
         <div className="wrap">
-          <span className="brand">{process.env.NEXT_PUBLIC_APP_NAME || "BAG Facture"}</span>
+          <span className="brand"><i />{process.env.NEXT_PUBLIC_APP_NAME || "BAG Facture"}</span>
           <button className="btn" onClick={logout}>Se déconnecter</button>
         </div>
       </header>
@@ -53,7 +54,7 @@ export default function Dashboard() {
 
         {remaining.length > 0 && (
           <section className="card todo">
-            <h3>Pour commencer</h3>
+            <div className="rule-head" style={{ borderTop: "none", paddingTop: 0 }}><h3>Pour commencer</h3></div>
             <ul>
               {todo.map(([target, label, done], i) => (
                 <li key={i}>
@@ -69,6 +70,7 @@ export default function Dashboard() {
         {tab === "company" && <CompanyForm org={org} onOrg={setOrg} />}
         {tab === "model" && <TemplatePanel org={org} onOrg={setOrg} />}
         {tab === "bot" && <BotPanel org={org} onOrg={setOrg} />}
+        {tab === "plan" && <PlanPanel />}
       </main>
     </>
   );

@@ -55,7 +55,7 @@ export default function CompanyForm({ org, onOrg }) {
   return (
     <form onSubmit={save}>
       <section className="card stack">
-        <h2>Votre entreprise</h2>
+        <div className="rule-head"><i /><h2>Votre entreprise</h2></div>
         <p className="muted">Ces informations apparaissent sur chaque document.</p>
         <div className="grid2">
           <label className="f">Nom de l'entreprise<input required value={f.name} onChange={set("name")} /></label>
@@ -74,7 +74,7 @@ export default function CompanyForm({ org, onOrg }) {
       </section>
 
       <section className="card stack">
-        <h2>Valeurs par défaut</h2>
+        <div className="rule-head"><i /><h2>Valeurs par défaut</h2></div>
         <div className="grid2">
           <label className="f">Devise<input value={f.currency} onChange={set("currency")} /></label>
           <label className="f">TVA par défaut (%)<input type="number" min="0" max="100" step="0.5" value={f.default_tva} onChange={set("default_tva")} /></label>
@@ -85,7 +85,7 @@ export default function CompanyForm({ org, onOrg }) {
       </section>
 
       <section className="card stack">
-        <h2>Modes de paiement</h2>
+        <div className="rule-head"><i /><h2>Modes de paiement</h2></div>
         <p className="muted">Une facture affiche ceux que vous cochez dans Telegram ; un devis les affiche tous.</p>
         {pm.map((m, i) => (
           <div className="pm" key={i}>
