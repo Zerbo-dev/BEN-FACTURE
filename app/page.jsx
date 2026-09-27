@@ -1,104 +1,114 @@
 "use client";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/browser.js";
+import { TEMPLATE_META, PALETTES, FREE_MONTHLY_LIMIT } from "@/lib/meta.js";
 
-const ERR = {
-  "Invalid login credentials": "E-mail ou mot de passe incorrect.",
-  "User already registered": "Un compte existe déjà avec cet e-mail. Connectez-vous plutôt.",
-  "Email not confirmed": "Confirmez d'abord votre e-mail (lien envoyé à l'inscription), ou désactivez la confirmation dans Supabase pour les tests.",
-  "Password should be at least 6 characters.": "Le mot de passe doit faire au moins 6 caractères.",
-};
-const readable = (m) => ERR[m] || m;
+const APP = () => process.env.NEXT_PUBLIC_APP_NAME || "BAG Facture";
 
-export default function Home() {
-  const [mode, setMode] = useState("login"); // login | signup
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState("");
-  const [done, setDone] = useState(null); // "signup" une fois inscrit
+function Nav({ signedIn }) {
+  return (
+    <header className="topbar">
+      <div className="wrap">
+        <span className="brand"><i />{APP()}</span>
+        <a className="btn" href={signedIn ? "/dashboard" : "/login"}>{signedIn ? "Tableau de bord" : "Se connecter"}</a>
+      </div>
+    </header>
+  );
+}
 
-  useEffect(() => {
-    supabase().auth.getSession().then(({ data }) => data.session && location.replace("/dashboard"));
-  }, []);
+/** Mock d'un devis, en CSS pur : illustre le rendu sans appeler le moteur de PDF (page publique, sans session). */
+function MockSheet() {
+  const rows = [["Diagnostic et repérage", "25 000"], ["Câblage du tableau électrique", "55 000"], ["Prise 16A encastrée", "36 000"]];
+  return (
+    <div className="mock-sheet" aria-hidden="true">
+      <div className="mock-band"><span>Devis n° 0000001-09/26</span><i /></div>
+      <div className="mock-rows">
+        {rows.map(([d, a]) => <div key={d} className="mock-row"><span>{d}</span><span className="mono">{a}</span></div>)}
+      </div>
+      <div className="mock-total"><span>Total</span><span className="mono">136 880 FCFA</span></div>
+    </div>
+  );
+}
 
-  async function submit(e) {
-    e.preventDefault();
-    setBusy(true); setErr("");
-    if (mode === "login") {
-      const { error } = await supabase().auth.signInWithPassword({ email, password });
-      if (error) setErr(readable(error.message)); else location.assign("/dashboard");
-    } else {
-      const { data, error } = await supabase().auth.signUp({ email, password });
-      if (error) setErr(readable(error.message));
-      else if (data.session) location.assign("/dashboard"); // confirmation e-mail désactivée : connecté tout de suite
-      else setDone("signup");
-    }
-    setBusy(false);
-  }
-
-  async function forgot() {
-    if (!email) return setErr("Indiquez votre e-mail ci-dessus, puis cliquez à nouveau sur ce lien.");
-    setBusy(true); setErr("");
-    const { error } = await supabase().auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/reset-password` });
-    setBusy(false);
-    if (error) setErr(readable(error.message)); else setDone("reset");
-  }
-
-  if (done === "signup") {
-    return (
-      <main className="login">
-        <div className="mark"><i /><span>{process.env.NEXT_PUBLIC_APP_NAME || "BAG Facture"}</span></div>
-        <h1>Compte créé.</h1>
-        <p className="lead">Un e-mail de confirmation a été envoyé à {email}. Ouvrez-le, puis revenez vous connecter.</p>
-        <button className="btn" onClick={() => { setDone(null); setMode("login"); }}>Retour à la connexion</button>
-      </main>
-    );
-  }
-  if (done === "reset") {
-    return (
-      <main className="login">
-        <div className="mark"><i /><span>{process.env.NEXT_PUBLIC_APP_NAME || "BAG Facture"}</span></div>
-        <h1>Lien envoyé.</h1>
-        <p className="lead">Vérifiez la boîte de {email} pour choisir un nouveau mot de passe.</p>
-        <button className="btn" onClick={() => setDone(null)}>Retour à la connexion</button>
-      </main>
-    );
-  }
+export default function Landing() {
+  const [signedIn, setSignedIn] = useState(false);
+  useEffect(() => { supabase().auth.getSession().then(({ data }) => setSignedIn(!!data.session)); }, []);
 
   return (
-    <main className="login">
-      <div className="mark"><i /><span>{process.env.NEXT_PUBLIC_APP_NAME || "BAG Facture"}</span></div>
-      <h1>Vos devis et factures, écrits comme un message.</h1>
-      <p className="lead">
-        Décrivez la prestation dans une conversation Telegram : le PDF arrive en quelques secondes, à vos couleurs et avec votre logo.
-      </p>
-      <form className="stack" onSubmit={submit}>
-        <label className="f">Adresse e-mail
-          <input type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        </label>
-        <label className="f">Mot de passe
-          <input type="password" required minLength={6} autoComplete={mode === "login" ? "current-password" : "new-password"}
-            value={password} onChange={(e) => setPassword(e.target.value)} />
-        </label>
-        <div className="row">
-          <button className="btn primary" disabled={busy}>{mode === "login" ? "Se connecter" : "Créer mon compte"}</button>
-          {mode === "login" && <button type="button" className="btn link" onClick={forgot} disabled={busy}>Mot de passe oublié ?</button>}
+    <>
+      <Nav signedIn={signedIn} />
+
+      <main>
+        <section className="hero wrap">
+          <div>
+            <h1>Vos devis et factures, écrits comme un message.</h1>
+            <p className="lead">
+              Décrivez la prestation dans une conversation Telegram : le PDF part en quelques secondes, à vos couleurs,
+              avec votre logo, numéroté et archivé tout seul.
+            </p>
+            <div className="row">
+              <a className="btn primary" href={signedIn ? "/dashboard" : "/login?mode=signup"}>
+                {signedIn ? "Aller au tableau de bord" : "Créer un compte gratuit"}
+              </a>
+              <a className="btn link" href="#comment-ca-marche">Comment ça marche</a>
+            </div>
+          </div>
+          <MockSheet />
+        </section>
+
+        <section className="wrap" id="comment-ca-marche">
+          <div className="rule-head"><i /><h2>Comment ça marche</h2></div>
+          <div className="grid3">
+            <div className="feature"><span className="mono step-no">01</span><h3>Décrivez la prestation</h3><p className="muted">Dans Telegram : « Devis pour M. Sawadogo, câblage 55000, prise 16A 4500 » — ou répondez aux questions du bot, une par une.</p></div>
+            <div className="feature"><span className="mono step-no">02</span><h3>Le PDF arrive</h3><p className="muted">À vos couleurs, avec votre logo et votre signature, numéroté automatiquement. Un aperçu image part avec, prêt pour WhatsApp.</p></div>
+            <div className="feature"><span className="mono step-no">03</span><h3>C'est archivé</h3><p className="muted">Chaque document est conservé, consultable et retéléchargeable depuis votre tableau de bord, à tout moment.</p></div>
+          </div>
+        </section>
+
+        <section className="wrap">
+          <div className="rule-head"><i /><h2>Trois modèles, vos couleurs</h2></div>
+          <div className="grid3">
+            {TEMPLATE_META.map((t) => (
+              <div className="feature" key={t.id}>
+                <h3>{t.label}</h3>
+                <p className="muted">{t.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className="palettes" style={{ marginTop: 6 }}>
+            {PALETTES.map((p) => (
+              <span className="pal" key={p.name} style={{ cursor: "default" }}>
+                <i style={{ background: `linear-gradient(90deg, ${p.primary} 50%, ${p.accent} 50%)` }} />{p.name}
+              </span>
+            ))}
+          </div>
+        </section>
+
+        <section className="wrap">
+          <div className="rule-head"><i /><h2>Tarifs</h2></div>
+          <div className="grid2">
+            <div className="plan-card">
+              <h3>Gratuit</h3>
+              <p className="plan-price">0 FCFA</p>
+              <p className="muted">{FREE_MONTHLY_LIMIT} documents par mois, tous types confondus. De quoi démarrer sans engagement.</p>
+              <a className="btn" href={signedIn ? "/dashboard" : "/login?mode=signup"}>Commencer</a>
+            </div>
+            <div className="plan-card highlight">
+              <h3>Payant</h3>
+              <p className="plan-price">Sur devis</p>
+              <p className="muted">Documents illimités. Pensé pour une activité régulière.</p>
+              <a className="btn primary" href={signedIn ? "/dashboard" : "/login?mode=signup"}>Nous contacter</a>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="foot">
+        <div className="wrap row" style={{ justifyContent: "space-between" }}>
+          <span className="brand small"><i />{APP()}</span>
+          <a href={signedIn ? "/dashboard" : "/login"}>{signedIn ? "Tableau de bord" : "Se connecter"}</a>
         </div>
-        {err && <p className="msg err" role="alert">{err}</p>}
-      </form>
-      <p className="switch">
-        {mode === "login" ? "Pas encore de compte ? " : "Déjà un compte ? "}
-        <button type="button" className="btn link" onClick={() => { setMode(mode === "login" ? "signup" : "login"); setErr(""); }}>
-          {mode === "login" ? "Créer un compte" : "Se connecter"}
-        </button>
-      </p>
-      {mode === "signup" && (
-        <p className="hint">
-          En test local : si Supabase exige la confirmation par e-mail et que vous n'avez pas configuré l'envoi,
-          désactivez « Confirm email » dans Authentication → Providers → Email de votre projet Supabase.
-        </p>
-      )}
-    </main>
+      </footer>
+    </>
   );
 }

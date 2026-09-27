@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
 import { api } from "@/lib/browser.js";
-import { useAction, Msg, shrinkImage } from "./ui.jsx";
+import { useAction, busyLabel, shrinkImage } from "./ui.jsx";
 
 function ImageField({ kind, label, hint, max, has, onOrg }) {
-  const { busy, msg, run } = useAction();
+  const { busy, run } = useAction();
   const [preview, setPreview] = useState(null);
   async function pick(e) {
     const file = e.target.files?.[0];
@@ -24,9 +24,8 @@ function ImageField({ kind, label, hint, max, has, onOrg }) {
         <input type="file" accept="image/png,image/jpeg,image/webp" onChange={pick} disabled={busy} />
       </label>
       <div className="row">
-        {preview && <img src={preview} alt="" style={{ maxHeight: 56, maxWidth: 160, border: "1px solid var(--line)" }} />}
-        {has && <button type="button" className="btn small" onClick={remove} disabled={busy}>Retirer</button>}
-        <Msg msg={msg} />
+        {preview && <img src={preview} alt="" style={{ maxHeight: 56, maxWidth: 160, border: "1px solid var(--rule)" }} />}
+        {has && <button type="button" className="btn small" onClick={remove} disabled={busy}>{busyLabel("Retirer", busy, "Suppression…")}</button>}
       </div>
     </div>
   );
@@ -38,7 +37,7 @@ export default function CompanyForm({ org, onOrg }) {
     currency: org.currency, default_tva: org.default_tva, default_terms: org.default_terms, default_garantie: org.default_garantie,
   });
   const [pm, setPm] = useState((org.payment_methods || []).map((m) => ({ label: m.label, lines: (m.lines || []).join("\n") })));
-  const { busy, msg, run } = useAction();
+  const { busy, run } = useAction();
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
   const setMethod = (i, k, v) => setPm(pm.map((m, j) => (j === i ? { ...m, [k]: v } : m)));
 
@@ -99,8 +98,7 @@ export default function CompanyForm({ org, onOrg }) {
       </section>
 
       <div className="row">
-        <button className="btn primary" disabled={busy}>Enregistrer</button>
-        <Msg msg={msg} />
+        <button className="btn primary" disabled={busy}>{busyLabel("Enregistrer", busy, "Enregistrement…")}</button>
       </div>
     </form>
   );

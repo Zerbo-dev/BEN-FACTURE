@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/browser.js";
+import { SkeletonLine } from "./Skeleton.jsx";
 
 export default function PlanPanel() {
   const [p, setP] = useState(null);
@@ -13,7 +14,7 @@ export default function PlanPanel() {
       <div className="rule-head"><i /><h2>Votre forfait</h2></div>
       {err && <p className="msg err" role="alert">{err}</p>}
       {!p ? (
-        <p className="muted">Chargement…</p>
+        <div className="stack"><SkeletonLine w="70%" /><SkeletonLine w="45%" /></div>
       ) : p.plan === "pro" ? (
         <>
           <p className="status"><span className="dot on" />Forfait payant — documents illimités</p>

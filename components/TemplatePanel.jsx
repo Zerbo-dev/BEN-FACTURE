@@ -2,7 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "@/lib/browser.js";
 import { TEMPLATE_META, PALETTES } from "@/lib/meta.js";
-import { useAction, Msg } from "./ui.jsx";
+import { useAction, busyLabel } from "./ui.jsx";
+import { SkeletonBlock } from "./Skeleton.jsx";
 
 export default function TemplatePanel({ org, onOrg }) {
   const [tpl, setTpl] = useState(org.template);
@@ -10,7 +11,7 @@ export default function TemplatePanel({ org, onOrg }) {
   const [img, setImg] = useState(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
-  const { busy, msg, run } = useAction();
+  const { busy, run } = useAction();
   const seq = useRef(0);
 
   // Aperçu en direct : le serveur génère le vrai document avec vos données ; on attend 400 ms après le dernier changement.
@@ -66,14 +67,14 @@ export default function TemplatePanel({ org, onOrg }) {
         <div className="row">
           <button className="btn primary" disabled={busy || !dirty}
             onClick={() => run(async () => onOrg(await api("/api/org", { method: "PUT", body: { template: tpl, theme } })), "Modèle enregistré.")}>
-            Enregistrer le modèle
+            {busyLabel("Enregistrer le modèle", busy, "Enregistrement…")}
           </button>
-          <Msg msg={msg} />
         </div>
       </div>
 
       <div className="desk" aria-live="polite">
-        {loading && <span className="busy">Mise à jour…</span>}
+        {loading && img && <span className="busy">Mise à jour…</span>}
+        {!img && loading && <div style={{ width: "min(100%, 560px)" }}><SkeletonBlock h={400} /></div>}
         {img && <img className="sheet" src={img} alt={`Aperçu d'un devis, modèle ${tpl}`} />}
         {err && <p className="msg err" role="alert">{err}</p>}
       </div>

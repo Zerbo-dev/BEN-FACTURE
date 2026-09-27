@@ -1,13 +1,13 @@
 "use client";
 import { useState } from "react";
 import { api } from "@/lib/browser.js";
-import { useAction, Msg } from "./ui.jsx";
+import { useAction, busyLabel } from "./ui.jsx";
 
 const Status = ({ on, children }) => <span className="status"><span className={`dot ${on ? "on" : ""}`} />{children}</span>;
 
 export default function BotPanel({ org, onOrg }) {
   const [token, setToken] = useState("");
-  const { busy, msg, run } = useAction();
+  const { busy, run } = useAction();
   const call = (path, body, ok) => run(async () => onOrg(await api(path, { method: "POST", body })), ok);
 
   if (!org.bot_connected) {
@@ -24,7 +24,7 @@ export default function BotPanel({ org, onOrg }) {
           <label className="f">Token du bot
             <input value={token} onChange={(e) => setToken(e.target.value)} autoComplete="off" spellCheck={false} placeholder="123456789:AA…" required />
           </label>
-          <div className="row"><button className="btn primary" disabled={busy}>Connecter le bot</button><Msg msg={msg} /></div>
+          <div className="row"><button className="btn primary" disabled={busy}>{busyLabel("Connecter le bot", busy, "Connexion…")}</button></div>
         </form>
       </section>
     );
@@ -38,9 +38,8 @@ export default function BotPanel({ org, onOrg }) {
         <div className="row">
           <button className="btn danger" disabled={busy}
             onClick={() => confirm("Déconnecter ce bot ? Vos documents restent enregistrés.") && call("/api/bot/disconnect", {}, "Bot déconnecté.")}>
-            Déconnecter le bot
+            {busyLabel("Déconnecter le bot", busy, "Déconnexion…")}
           </button>
-          <Msg msg={msg} />
         </div>
       </section>
 
@@ -50,7 +49,7 @@ export default function BotPanel({ org, onOrg }) {
         <p className="muted">Ouvrez le lien ci-dessous depuis Telegram et appuyez sur « Démarrer ». Il ne fonctionne qu'une fois : pour ajouter un collaborateur, générez-en un nouveau.</p>
         <div className="row">
           {org.claim_link && <a className="btn primary" href={org.claim_link} target="_blank" rel="noreferrer">Ouvrir dans Telegram</a>}
-          <button className="btn" disabled={busy} onClick={() => call("/api/org", { action: "new_claim_code" }, "Nouveau lien prêt.")}>Générer un nouveau lien</button>
+          <button className="btn" disabled={busy} onClick={() => call("/api/org", { action: "new_claim_code" }, "Nouveau lien prêt.")}>{busyLabel("Générer un nouveau lien", busy, "Génération…")}</button>
         </div>
       </section>
 

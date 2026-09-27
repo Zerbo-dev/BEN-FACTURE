@@ -9,7 +9,7 @@ Client ──(Telegram)──► son bot ──► /api/webhook/<bot_id> ──�
                                          │                └─► PDF (react-pdf) + aperçu PNG ──► chat + canal privé du client
 Dashboard (Next.js) ──► /api/org, /api/preview, /api/bot/connect, /api/documents…
 Cron nuit ──► /api/cron/archive ──► Drive (.jsonl.gz + registre .csv) ──► allègement de la base
-```jj
+```
 
 ## Mise en route
 
@@ -29,14 +29,28 @@ Cron nuit ──► /api/cron/archive ──► Drive (.jsonl.gz + registre .csv
    expire au bout de 7 jours). Puis `npm run google-token` : le script affiche `GOOGLE_REFRESH_TOKEN` et
    `DRIVE_ROOT_FOLDER_ID` (il crée le dossier « Archives BD » lui-même, obligatoire avec le scope `drive.file`).
 
+## Pages
+
+- `/` — page d'accueil publique (présentation, tarifs, liens vers `/login`).
+- `/login` — connexion / inscription par e-mail + mot de passe (`?mode=signup` ouvre directement l'inscription).
+- `/reset-password` — arrivée depuis le lien « mot de passe oublié ».
+- `/dashboard` — protégé : redirige vers `/login` si aucune session.
+
 ## Parcours d'un client
 
-1. Connexion par e-mail (lien magique) → onglet **Entreprise** (nom, logo, signature, modes de paiement, TVA/termes par défaut).
+1. Compte créé sur `/login` → onglet **Entreprise** (nom, logo, signature, modes de paiement, TVA/termes par défaut).
 2. Onglet **Modèle** : 3 modèles × couleurs, aperçu en direct généré par le vrai moteur PDF.
 3. Onglet **Bot Telegram** : il crée son bot avec @BotFather, colle le token (chiffré AES-256-GCM en base), le webhook est branché
    avec un secret propre. Il ouvre le lien d'association (usage unique) : seuls les chats liés peuvent utiliser le bot.
 4. Facultatif : canal privé + bot administrateur ⇒ le bot détecte le canal (`my_chat_member`) et y range chaque PDF.
 5. Dans Telegram : `/devis`, `/facture`, `/proforma`, ou un message libre (« Devis pour M. Sawadogo, … Diagnostic 25000 »).
+6. Onglet **Aperçu** : documents et chiffre d'affaires du mois, activité des 8 dernières semaines, derniers documents.
+
+## Interface
+
+- **Navigation** : barre latérale fixe sur grand écran, tiroir coulissant (menu ☰) sur mobile — plus de barre d'onglets qui déborde.
+- **Chargement** : squelettes (silhouettes grises animées) à la place de "Chargement…", pour chaque liste et bloc de statistiques.
+- **Retours d'action** : notifications (coin bas-droit sur desktop, bas de l'écran sur mobile) au lieu de texte qui reste collé sous les boutons ; les boutons eux-mêmes passent au participe présent pendant l'action ("Enregistrer" → "Enregistrement…").
 
 ## Archivage et allègement de la base
 

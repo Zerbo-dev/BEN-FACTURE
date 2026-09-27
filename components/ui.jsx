@@ -1,21 +1,22 @@
 "use client";
 import { useState } from "react";
+import { useToast } from "./Toast.jsx";
 
-/** Exécute une action async en suivant son état (en cours / succès / erreur). */
+/** Exécute une action async : bascule busy, et signale le résultat par une notification (pas de texte inline qui reste collé à l'écran). */
 export function useAction() {
+  const toast = useToast();
   const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState(null);
   async function run(fn, ok = "Enregistré.") {
-    setBusy(true); setMsg(null);
-    try { await fn(); setMsg({ ok: true, text: ok }); }
-    catch (e) { setMsg({ ok: false, text: e.message }); }
+    setBusy(true);
+    try { await fn(); toast(ok, "ok"); }
+    catch (e) { toast(e.message, "err"); }
     finally { setBusy(false); }
   }
-  return { busy, msg, run };
+  return { busy, run };
 }
 
-export const Msg = ({ msg }) =>
-  msg ? <span role={msg.ok ? "status" : "alert"} className={`msg ${msg.ok ? "ok" : "err"}`}>{msg.text}</span> : null;
+/** Libellé de bouton qui passe au participe présent pendant l'action ("Enregistrer" → "Enregistrement…"). */
+export const busyLabel = (label, busy, ing) => (busy ? ing || `${label}…` : label);
 
 /** Réduit l'image dans le navigateur (le stockage ne reçoit que quelques dizaines de Ko). */
 export async function shrinkImage(file, max) {

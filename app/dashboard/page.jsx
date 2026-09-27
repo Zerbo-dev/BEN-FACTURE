@@ -1,34 +1,37 @@
 "use client";
 import { useEffect, useState } from "react";
 import { api, supabase } from "@/lib/browser.js";
+import DashboardShell from "@/components/DashboardShell.jsx";
 import CompanyForm from "@/components/CompanyForm.jsx";
 import TemplatePanel from "@/components/TemplatePanel.jsx";
 import BotPanel from "@/components/BotPanel.jsx";
 import Documents from "@/components/Documents.jsx";
 import PlanPanel from "@/components/PlanPanel.jsx";
+import StatsPanel from "@/components/StatsPanel.jsx";
 
-const TABS = [["docs", "Documents"], ["company", "Entreprise"], ["model", "Modèle"], ["bot", "Bot Telegram"], ["plan", "Forfait"]];
+const TABS = [["overview", "Aperçu"], ["docs", "Documents"], ["company", "Entreprise"], ["model", "Modèle"], ["bot", "Bot Telegram"], ["plan", "Forfait"]];
 
 export default function Dashboard() {
   const [org, setOrg] = useState(null);
-  const [tab, setTab] = useState("docs");
+  const [tab, setTab] = useState("overview");
   const [err, setErr] = useState("");
 
   useEffect(() => {
     (async () => {
       const { data } = await supabase().auth.getSession();
-      if (!data.session) return location.replace("/");
+      if (!data.session) return location.replace("/login");
       try {
         const o = await api("/api/org");
         setOrg(o);
-        setTab(!o.name ? "company" : !o.bot_connected ? "bot" : "docs");
+        setTab(!o.name ? "company" : !o.bot_connected ? "bot" : "overview");
       } catch (e) { setErr(e.message); }
     })();
   }, []);
 
   async function logout() { await supabase().auth.signOut(); location.replace("/"); }
-  if (err) return <main className="wrap"><p className="msg err" role="alert">{err}</p></main>;
-  if (!org) return <main className="wrap"><p className="muted">Chargement…</p></main>;
+
+  if (err) return <main className="wrap" style={{ paddingTop: 24 }}><p className="msg err" role="alert">{err}</p></main>;
+  if (!org) return <main className="wrap" style={{ paddingTop: 24 }}><p className="muted">Chargement…</p></main>;
 
   const todo = [
     ["company", "Renseigner votre entreprise", !!org.name],
@@ -38,40 +41,27 @@ export default function Dashboard() {
   const remaining = todo.filter((t) => !t[2]);
 
   return (
-    <>
-      <header className="topbar">
-        <div className="wrap">
-          <span className="brand"><i />{process.env.NEXT_PUBLIC_APP_NAME || "BAG Facture"}</span>
-          <button className="btn" onClick={logout}>Se déconnecter</button>
-        </div>
-      </header>
-      <main className="wrap">
-        <div className="tabs" role="tablist">
-          {TABS.map(([id, label]) => (
-            <button key={id} role="tab" className="tab" aria-selected={tab === id} onClick={() => setTab(id)}>{label}</button>
-          ))}
-        </div>
+    <DashboardShell brand={process.env.NEXT_PUBLIC_APP_NAME || "BAG Facture"} tabs={TABS} active={tab} onSelect={setTab} onLogout={logout}>
+      {remaining.length > 0 && (
+        <section className="card todo">
+          <div className="rule-head" style={{ borderTop: "none", paddingTop: 0 }}><h3>Pour commencer</h3></div>
+          <ul>
+            {todo.map(([target, label, done], i) => (
+              <li key={i}>
+                <span className={done ? "done" : ""}>{label}</span>
+                {!done && <button className="btn" onClick={() => setTab(target)}>Y aller</button>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
-        {remaining.length > 0 && (
-          <section className="card todo">
-            <div className="rule-head" style={{ borderTop: "none", paddingTop: 0 }}><h3>Pour commencer</h3></div>
-            <ul>
-              {todo.map(([target, label, done], i) => (
-                <li key={i}>
-                  <span className={done ? "done" : ""}>{label}</span>
-                  {!done && <button className="btn" onClick={() => setTab(target)}>Y aller</button>}
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {tab === "docs" && <Documents org={org} />}
-        {tab === "company" && <CompanyForm org={org} onOrg={setOrg} />}
-        {tab === "model" && <TemplatePanel org={org} onOrg={setOrg} />}
-        {tab === "bot" && <BotPanel org={org} onOrg={setOrg} />}
-        {tab === "plan" && <PlanPanel />}
-      </main>
-    </>
+      {tab === "overview" && <StatsPanel org={org} onNav={setTab} />}
+      {tab === "docs" && <Documents org={org} />}
+      {tab === "company" && <CompanyForm org={org} onOrg={setOrg} />}
+      {tab === "model" && <TemplatePanel org={org} onOrg={setOrg} />}
+      {tab === "bot" && <BotPanel org={org} onOrg={setOrg} />}
+      {tab === "plan" && <PlanPanel />}
+    </DashboardShell>
   );
 }

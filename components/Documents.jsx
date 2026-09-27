@@ -2,14 +2,19 @@
 import { useEffect, useState } from "react";
 import { api } from "@/lib/browser.js";
 import ArchivePanel from "./ArchivePanel.jsx";
+import { SkeletonRows } from "./Skeleton.jsx";
+import { useToast } from "./Toast.jsx";
+import { busyLabel } from "./ui.jsx";
 
 const LABEL = { devis: "Devis", facture: "Facture", proforma: "Proforma" };
 const money = (n) => Math.round(Number(n) || 0).toLocaleString("fr-FR");
 
 export default function Documents({ org }) {
+  const toast = useToast();
   const [rows, setRows] = useState(null);
   const [q, setQ] = useState("");
   const [err, setErr] = useState("");
+  const [dlId, setDlId] = useState(null);
 
   const reload = () => api(`/api/documents?q=${encodeURIComponent(q)}`).then(setRows).catch((e) => setErr(e.message));
   useEffect(() => {
@@ -18,7 +23,7 @@ export default function Documents({ org }) {
   }, [q]);
 
   async function download(d) {
-    setErr("");
+    setDlId(d.id);
     try {
       const blob = await api(`/api/documents/${d.id}/file`, { raw: true });
       const a = document.createElement("a");
@@ -26,7 +31,8 @@ export default function Documents({ org }) {
       a.download = `${LABEL[d.doc_type]}_${d.number.replace("/", "-")}.pdf`;
       a.click();
       setTimeout(() => URL.revokeObjectURL(a.href), 10000);
-    } catch (e) { setErr(e.message); }
+    } catch (e) { toast(e.message, "err"); }
+    finally { setDlId(null); }
   }
 
   return (
@@ -34,6 +40,7 @@ export default function Documents({ org }) {
       <div className="rule-head"><i /><h2>Documents</h2></div>
       <label className="f">Rechercher<input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Nom du client ou numéro" /></label>
       {err && <p className="msg err" role="alert">{err}</p>}
+      {rows === null && <SkeletonRows n={4} />}
       {rows && rows.length === 0 && (
         <p className="empty">{q ? "Aucun document ne correspond." : org.bot_connected ? "Aucun document pour l'instant. Envoyez /devis à votre bot pour créer le premier." : "Connectez votre bot pour créer votre premier document."}</p>
       )}
@@ -48,7 +55,7 @@ export default function Documents({ org }) {
             <div className="who">{d.client_name || "Client non précisé"}</div>
             <div className="when">{new Date(d.issued_on).toLocaleDateString("fr-FR")}</div>
             <div className="actions">
-              {d.downloadable ? <button className="btn" onClick={() => download(d)}>Télécharger le PDF</button> : <span className="muted small">Détail conservé sur le Drive</span>}
+              {d.downloadable ? <button className="btn" disabled={dlId === d.id} onClick={() => download(d)}>{busyLabel("Télécharger le PDF", dlId === d.id, "Téléchargement…")}</button> : <span className="muted small">Détail conservé sur le Drive</span>}
             </div>
           </div>
         ))}

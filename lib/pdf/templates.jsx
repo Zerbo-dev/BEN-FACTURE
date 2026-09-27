@@ -12,6 +12,7 @@ const COLS = [
 ];
 const HEADS = ["Description", "Prix unitaire", "Qté", "Total HT"];
 const PAD = 36;
+const LINE = { marginTop: 3, lineHeight: 1.4 }; // espace entre les lignes d'un bloc adresse
 
 /* ---------- Blocs communs aux trois modèles ---------- */
 
@@ -69,9 +70,9 @@ function Rows({ items, o }) {
 function Client({ doc, o, label = "Client : " }) {
   return (
     <View>
-      <Text style={{ fontFamily: o.bold, fontSize: o.fs + 1.5, marginBottom: 3 }}>{label}{doc.client?.name || ""}</Text>
-      {!!doc.client?.address && <Text>{doc.client.address}</Text>}
-      {!!doc.client?.phone && <Text>{doc.client.phone}</Text>}
+      <Text style={{ fontFamily: o.bold, fontSize: o.fs + 1.5, marginBottom: 4 }}>{label}{doc.client?.name || ""}</Text>
+      {!!doc.client?.address && <Text style={LINE}>{doc.client.address}</Text>}
+      {!!doc.client?.phone && <Text style={LINE}>{doc.client.phone}</Text>}
     </View>
   );
 }
@@ -79,10 +80,10 @@ function Client({ doc, o, label = "Client : " }) {
 function Company({ org, o, align = "left", withName = true }) {
   return (
     <View style={{ alignItems: align === "right" ? "flex-end" : "flex-start" }}>
-      {withName && !!org.name && <Text style={{ fontFamily: o.bold, fontSize: o.fs + 1.5, marginBottom: 3 }}>{org.name}</Text>}
-      {!!org.address && <Text>{org.address}</Text>}
-      {!!org.phone && <Text>{org.phone}</Text>}
-      {!!org.email && <Text>{org.email}</Text>}
+      {withName && !!org.name && <Text style={{ fontFamily: o.bold, fontSize: o.fs + 1.5, marginBottom: 4 }}>{org.name}</Text>}
+      {!!org.address && <Text style={LINE}>{org.address}</Text>}
+      {!!org.phone && <Text style={LINE}>{org.phone}</Text>}
+      {!!org.email && <Text style={LINE}>{org.email}</Text>}
     </View>
   );
 }
@@ -143,9 +144,9 @@ function Bottom({ p, o }) {
         {blocks.length > 0 && (
           <Section title="Informations de paiement" o={o}>
             {blocks.map((b, i) => (
-              <View key={i} style={{ marginBottom: 5 }}>
-                <Text style={{ fontFamily: o.bold }}>{b.label}</Text>
-                {(b.lines || []).map((l, j) => <Text key={j}>{l}</Text>)}
+              <View key={i} style={{ marginBottom: 7 }}>
+                <Text style={{ fontFamily: o.bold, marginBottom: 2 }}>{b.label}</Text>
+                {(b.lines || []).map((l, j) => <Text key={j} style={LINE}>{l}</Text>)}
               </View>
             ))}
           </Section>

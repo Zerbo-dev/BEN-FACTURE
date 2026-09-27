@@ -7,7 +7,7 @@ import { InvoiceDocument } from "./templates.jsx";
 export const renderPdf = (props) => renderToBuffer(<InvoiceDocument {...props} />);
 
 /** Convertit la première page du PDF en PNG (aperçu à partager sur WhatsApp). */
-export async function pdfToPng(pdfBuffer, scale = 1.6) {
+export async function pdfToPng(pdfBuffer, scale = 2.4) {
   const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
   const { createCanvas } = await import("@napi-rs/canvas");
   const fonts = path.join(process.cwd(), "node_modules/pdfjs-dist/standard_fonts") + "/";

@@ -20,7 +20,7 @@ export const GET = handle(async (req) => {
   };
   const pdf = await renderPdf(sampleProps(org, await loadBranding(org), { template, theme, longList: sp.get("long") === "1" }));
   const asPdf = sp.get("format") === "pdf";
-  return new Response(asPdf ? pdf : await pdfToPng(pdf, 1.4), {
+  return new Response(asPdf ? pdf : await pdfToPng(pdf, 2), {
     headers: { "content-type": asPdf ? "application/pdf" : "image/png", "cache-control": "private, no-store" },
   });
 });

@@ -45,7 +45,7 @@ export default function ResetPassword() {
         <div className="mark"><i /><span>{process.env.NEXT_PUBLIC_APP_NAME || "BAG Facture"}</span></div>
         <h1>Lien invalide ou expiré.</h1>
         <p className="lead">Redemandez un lien de réinitialisation depuis la page de connexion.</p>
-        <a className="btn" href="/">Retour à la connexion</a>
+        <a className="btn" href="/login">Retour à la connexion</a>
       </main>
     );
   }
