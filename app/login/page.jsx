@@ -2,6 +2,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/browser.js";
+import Logo from "@/components/Logo.jsx";
 
 const ERR = {
   "Invalid login credentials": "E-mail ou mot de passe incorrect.",
@@ -50,7 +51,7 @@ function LoginForm() {
   if (done === "signup") {
     return (
       <main className="login">
-        <div className="mark"><i /><span>{process.env.NEXT_PUBLIC_APP_NAME || "BAG Facture"}</span></div>
+        <Logo />
         <h1>Compte créé.</h1>
         <p className="lead">Un e-mail de confirmation a été envoyé à {email}. Ouvrez-le, puis revenez vous connecter.</p>
         <button className="btn" onClick={() => { setDone(null); setMode("login"); }}>Retour à la connexion</button>
@@ -60,7 +61,7 @@ function LoginForm() {
   if (done === "reset") {
     return (
       <main className="login">
-        <div className="mark"><i /><span>{process.env.NEXT_PUBLIC_APP_NAME || "BAG Facture"}</span></div>
+        <Logo />
         <h1>Lien envoyé.</h1>
         <p className="lead">Vérifiez la boîte de {email} pour choisir un nouveau mot de passe.</p>
         <button className="btn" onClick={() => setDone(null)}>Retour à la connexion</button>
@@ -70,7 +71,7 @@ function LoginForm() {
 
   return (
     <main className="login">
-      <div className="mark"><i /><span>{process.env.NEXT_PUBLIC_APP_NAME || "BAG Facture"}</span></div>
+      <Logo />
       <h1>Vos devis et factures, écrits comme un message.</h1>
       <p className="lead">
         Décrivez la prestation dans une conversation Telegram : le PDF arrive en quelques secondes, à vos couleurs et avec votre logo.

@@ -20,7 +20,7 @@ function WeekBars({ weeks }) {
         return (
           <g key={wk.week}>
             <rect x={x} y={h - bh} width={w} height={bh} fill={wk.count ? "var(--green)" : "var(--rule-soft)"} />
-            {wk.count > 0 && <text x={x + w / 2} y={h - bh - 6} textAnchor="middle" fontSize="12" fontFamily="IBM Plex Mono" fill="var(--ink)">{wk.count}</text>}
+            {wk.count > 0 && <text x={x + w / 2} y={h - bh - 6} textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--ink)">{wk.count}</text>}
             <text x={x + w / 2} y={h + 16} textAnchor="middle" fontSize="10.5" fill="var(--ink-soft)">{short(wk.week)}</text>
           </g>
         );

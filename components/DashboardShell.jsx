@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { LayoutDashboard, FileText, Building2, Palette, Bot, CreditCard, Menu, X, LogOut } from "lucide-react";
+import Logo from "./Logo.jsx";
 
 const ICON = { overview: LayoutDashboard, docs: FileText, company: Building2, model: Palette, bot: Bot, plan: CreditCard };
 
@@ -39,14 +40,14 @@ export default function DashboardShell({ brand, tabs, active, onSelect, onLogout
     <div className="shell">
       <header className="topbar mobile-only">
         <div className="wrap">
-          <button className="icon-btn" aria-label="Ouvrir le menu" aria-expanded={open} onClick={() => setOpen(true)}><Menu size={22} /></button>
-          <span className="brand"><i />{brand}</span>
-          <button className="icon-btn" aria-label="Se déconnecter" onClick={onLogout}><LogOut size={19} /></button>
+          <button className="icon-btn" aria-label="Ouvrir le menu" aria-expanded={open} onClick={() => setOpen(true)}><Menu size={20} /></button>
+          <Logo size={28} />
+          <button className="icon-btn" aria-label="Se déconnecter" onClick={onLogout}><LogOut size={18} /></button>
         </div>
       </header>
 
       <aside className="side desktop-only">
-        <div className="brand" style={{ padding: "0 20px", height: 58, borderBottom: "1px solid var(--rule)" }}><i />{brand}</div>
+        <div style={{ padding: "0 18px", height: 64, display: "flex", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,.1)" }}><Logo size={30} /></div>
         <div style={{ padding: "14px 12px", flex: 1 }}><NavItems tabs={tabs} active={active} onSelect={onSelect} /></div>
         <button className="nav-item" style={{ margin: "12px", width: "calc(100% - 24px)" }} onClick={onLogout}>
           <LogOut size={18} strokeWidth={2} aria-hidden="true" /><span>Se déconnecter</span>
@@ -56,9 +57,9 @@ export default function DashboardShell({ brand, tabs, active, onSelect, onLogout
       {open && (
         <div className="drawer-overlay" onClick={() => setOpen(false)}>
           <aside className="drawer" role="dialog" aria-modal="true" aria-label="Menu" onClick={(e) => e.stopPropagation()}>
-            <div className="row" style={{ justifyContent: "space-between", padding: "0 16px", height: 58, borderBottom: "1px solid var(--rule)" }}>
-              <span className="brand"><i />{brand}</span>
-              <button className="icon-btn" ref={closeRef} aria-label="Fermer le menu" onClick={() => setOpen(false)}><X size={22} /></button>
+            <div className="row" style={{ justifyContent: "space-between", padding: "0 16px", height: 64, borderBottom: "1px solid rgba(255,255,255,.1)" }}>
+              <Logo size={28} />
+              <button className="icon-btn" ref={closeRef} aria-label="Fermer le menu" onClick={() => setOpen(false)}><X size={20} /></button>
             </div>
             <div style={{ padding: 12 }}><NavItems tabs={tabs} active={active} onSelect={select} /></div>
           </aside>

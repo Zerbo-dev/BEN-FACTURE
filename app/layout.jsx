@@ -1,7 +1,4 @@
-import "@fontsource-variable/fraunces";
-import "@fontsource-variable/ibm-plex-sans";
-import "@fontsource/ibm-plex-mono/500.css";
-import "@fontsource/ibm-plex-mono/600.css";
+import "@fontsource-variable/inter";
 import "./globals.css";
 
 const name = process.env.APP_NAME || "BAG Facture";

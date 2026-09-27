@@ -46,6 +46,13 @@ Cron nuit ──► /api/cron/archive ──► Drive (.jsonl.gz + registre .csv
 5. Dans Telegram : `/devis`, `/facture`, `/proforma`, ou un message libre (« Devis pour M. Sawadogo, … Diagnostic 25000 »).
 6. Onglet **Aperçu** : documents et chiffre d'affaires du mois, activité des 8 dernières semaines, derniers documents.
 
+## Identité visuelle
+
+L'application (landing, connexion, tableau de bord) suit une palette bleue moderne (fond gris-bleu clair, cartes
+blanches arrondies, ombres douces, bandeaux marine, badges d'icônes colorés), sur Inter. **Les documents PDF générés
+(devis/factures/proformas) gardent leur propre identité** (3 modèles Moderne/Classique/Sobre, indépendante de l'appli
+web) — ce n'est pas ce qui a changé ici ; si vous voulez aussi retravailler les modèles de documents, dites-le.
+
 ## Interface
 
 - **Navigation** : barre latérale fixe sur grand écran, tiroir coulissant (menu ☰) sur mobile — plus de barre d'onglets qui déborde.

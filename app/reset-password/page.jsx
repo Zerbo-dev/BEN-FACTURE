@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/browser.js";
+import Logo from "@/components/Logo.jsx";
 
 // Arrivée depuis le lien "mot de passe oublié" : Supabase pose la session de récupération
 // automatiquement à la lecture de l'URL, puis émet l'évènement PASSWORD_RECOVERY.
@@ -33,7 +34,7 @@ export default function ResetPassword() {
   if (done) {
     return (
       <main className="login">
-        <div className="mark"><i /><span>{process.env.NEXT_PUBLIC_APP_NAME || "BAG Facture"}</span></div>
+        <Logo />
         <h1>Mot de passe mis à jour.</h1>
         <a className="btn primary" href="/dashboard">Aller au tableau de bord</a>
       </main>
@@ -42,7 +43,7 @@ export default function ResetPassword() {
   if (expired && !ready) {
     return (
       <main className="login">
-        <div className="mark"><i /><span>{process.env.NEXT_PUBLIC_APP_NAME || "BAG Facture"}</span></div>
+        <Logo />
         <h1>Lien invalide ou expiré.</h1>
         <p className="lead">Redemandez un lien de réinitialisation depuis la page de connexion.</p>
         <a className="btn" href="/login">Retour à la connexion</a>
@@ -51,7 +52,7 @@ export default function ResetPassword() {
   }
   return (
     <main className="login">
-      <div className="mark"><i /><span>{process.env.NEXT_PUBLIC_APP_NAME || "BAG Facture"}</span></div>
+      <Logo />
       <h1>Choisissez un nouveau mot de passe.</h1>
       {!ready ? (
         <p className="muted">Vérification du lien…</p>
