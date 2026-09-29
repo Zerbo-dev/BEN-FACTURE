@@ -46,6 +46,25 @@ Cron nuit ──► /api/cron/archive ──► Drive (.jsonl.gz + registre .csv
 5. Dans Telegram : `/devis`, `/facture`, `/proforma`, ou un message libre (« Devis pour M. Sawadogo, … Diagnostic 25000 »).
 6. Onglet **Aperçu** : documents et chiffre d'affaires du mois, activité des 8 dernières semaines, derniers documents.
 
+## Corrections UX/UI (landing)
+
+- **Ancres sous la barre collante** : `scroll-padding-top` sur `html` — les liens "Comment ça marche" etc. ne
+  cachent plus le début de la section derrière la barre de navigation.
+- **Illustration héros sur mobile** : le téléphone et la carte de devis, positionnés en absolu avec des largeurs
+  fixes, se chevauchaient et pouvaient déborder sous ~640px de large. La carte de devis est masquée et le téléphone
+  recentré sur mobile.
+- **Contenu invisible sans JavaScript** : les sections à apparition au défilement (`data-reveal`) partent à
+  `opacity: 0` en attendant l'animation. Un repli `<noscript>` dans `app/layout.jsx` force leur visibilité si le
+  JavaScript ne s'exécute pas (réseau qui coupe le chargement, script bloqué).
+- **Lien d'évitement** (`Aller au contenu`) pour la navigation clavier, visible seulement au focus.
+
+## Animations (motion.dev)
+
+La bibliothèque `motion` (ex-Framer Motion) est utilisée avec parcimonie : notifications qui glissent/s'estompent,
+tiroir de navigation mobile qui coulisse, transition légère entre les onglets du tableau de bord, apparition au
+défilement des sections de la page d'accueil. Tout passe par `<MotionConfig reducedMotion="user">` dans
+`app/layout.jsx`, qui respecte automatiquement le réglage "mouvement réduit" du système — rien à gérer au cas par cas.
+
 ## Identité visuelle
 
 L'application (landing, connexion, tableau de bord) suit une palette bleue moderne (fond gris-bleu clair, cartes

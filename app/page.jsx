@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/browser.js";
 import Logo from "@/components/Logo.jsx";
+import Reveal from "@/components/Reveal.jsx";
 import { FREE_MONTHLY_LIMIT } from "@/lib/meta.js";
 import {
   Zap, ShieldCheck, CheckCircle2, PlayCircle, Building2, Bot, Send, FileDown,
@@ -83,9 +84,10 @@ export default function Landing() {
 
   return (
     <>
+      <a className="skip-link" href="#main-content">Aller au contenu</a>
       <Nav signedIn={signedIn} />
 
-      <main>
+      <main id="main-content">
         <section className="hero wrap">
           <div>
             <span className="pill"><Send size={14} />Depuis Telegram</span>
@@ -104,7 +106,7 @@ export default function Landing() {
           <HeroVisual />
         </section>
 
-        <section className="wrap" id="comment-ca-marche">
+        <Reveal as="section" className="wrap" id="comment-ca-marche">
           <p className="eyebrow">Comment ça marche</p>
           <h2>En 4 étapes simples</h2>
           <p className="muted" style={{ maxWidth: "54ch" }}>Créez votre entreprise, connectez votre bot Telegram, et envoyez vos commandes. Le reste se fait automatiquement.</p>
@@ -118,9 +120,9 @@ export default function Landing() {
               </div>
             ))}
           </div>
-        </section>
+        </Reveal>
 
-        <section className="wrap" id="fonctionnalites">
+        <Reveal as="section" className="wrap" id="fonctionnalites">
           <p className="eyebrow">Fonctionnalités</p>
           <h2>Une facturation pensée pour les pros</h2>
           <p className="muted" style={{ maxWidth: "54ch" }}>Tout ce dont vous avez besoin pour gérer vos devis, factures et proformas, sans prise de tête.</p>
@@ -133,9 +135,9 @@ export default function Landing() {
               </div>
             ))}
           </div>
-        </section>
+        </Reveal>
 
-        <section className="wrap">
+        <Reveal as="section" className="wrap">
           <div className="split">
             <div>
               <p className="eyebrow">Votre identité, vos documents</p>
@@ -157,9 +159,9 @@ export default function Landing() {
               </div>
             </div>
           </div>
-        </section>
+        </Reveal>
 
-        <section className="wrap">
+        <Reveal as="section" className="wrap">
           <div className="split rev">
             <div className="mockcard">
               <p className="muted small" style={{ marginBottom: 10, fontWeight: 700 }}>Aperçu — ce mois-ci</p>
@@ -180,9 +182,9 @@ export default function Landing() {
               </ul>
             </div>
           </div>
-        </section>
+        </Reveal>
 
-        <section className="wrap">
+        <Reveal as="section" className="wrap">
           <p className="eyebrow">Telegram comme point d'entrée</p>
           <h2>Simple comme un message</h2>
           <p className="muted" style={{ maxWidth: "54ch", marginBottom: 26 }}>Restez dans votre environnement habituel et gérez tout avec des commandes Telegram.</p>
@@ -201,9 +203,9 @@ export default function Landing() {
               ))}
             </div>
           </div>
-        </section>
+        </Reveal>
 
-        <section className="wrap" id="tarifs">
+        <Reveal as="section" className="wrap" id="tarifs">
           <p className="eyebrow">Tarification</p>
           <h2>Une offre adaptée à vos besoins</h2>
           <p className="muted" style={{ maxWidth: "54ch" }}>Commencez gratuitement et passez au forfait payant quand votre activité grandit.</p>
@@ -231,7 +233,7 @@ export default function Landing() {
               <a className="btn" style={{ marginTop: 8, background: "#fff" }} href={cta}>Nous contacter</a>
             </div>
           </div>
-        </section>
+        </Reveal>
       </main>
 
       <div className="cta-band">

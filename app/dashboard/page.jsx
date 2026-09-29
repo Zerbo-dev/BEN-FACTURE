@@ -8,6 +8,7 @@ import BotPanel from "@/components/BotPanel.jsx";
 import Documents from "@/components/Documents.jsx";
 import PlanPanel from "@/components/PlanPanel.jsx";
 import StatsPanel from "@/components/StatsPanel.jsx";
+import { AnimatePresence, motion } from "motion/react";
 
 const TABS = [["overview", "Aperçu"], ["docs", "Documents"], ["company", "Entreprise"], ["model", "Modèle"], ["bot", "Bot Telegram"], ["plan", "Forfait"]];
 
@@ -56,12 +57,16 @@ export default function Dashboard() {
         </section>
       )}
 
-      {tab === "overview" && <StatsPanel org={org} onNav={setTab} />}
-      {tab === "docs" && <Documents org={org} />}
-      {tab === "company" && <CompanyForm org={org} onOrg={setOrg} />}
-      {tab === "model" && <TemplatePanel org={org} onOrg={setOrg} />}
-      {tab === "bot" && <BotPanel org={org} onOrg={setOrg} />}
-      {tab === "plan" && <PlanPanel />}
+      <AnimatePresence mode="wait">
+        <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
+          {tab === "overview" && <StatsPanel org={org} onNav={setTab} />}
+          {tab === "docs" && <Documents org={org} />}
+          {tab === "company" && <CompanyForm org={org} onOrg={setOrg} />}
+          {tab === "model" && <TemplatePanel org={org} onOrg={setOrg} />}
+          {tab === "bot" && <BotPanel org={org} onOrg={setOrg} />}
+          {tab === "plan" && <PlanPanel />}
+        </motion.div>
+      </AnimatePresence>
     </DashboardShell>
   );
 }

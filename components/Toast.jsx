@@ -1,5 +1,6 @@
 "use client";
 import { createContext, useCallback, useContext, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 
 const Ctx = createContext(null);
 let uid = 0;
@@ -25,12 +26,24 @@ export function ToastProvider({ children }) {
     <Ctx.Provider value={push}>
       {children}
       <div className="toasts" role="region" aria-label="Notifications">
-        {toasts.map((t) => (
-          <div key={t.id} className={`toast ${t.type}`} role="status" aria-live="polite">
-            <span>{t.text}</span>
-            <button aria-label="Fermer" className="toast-x" onClick={() => dismiss(t.id)}>×</button>
-          </div>
-        ))}
+        <AnimatePresence>
+          {toasts.map((t) => (
+            <motion.div
+              key={t.id}
+              className={`toast ${t.type}`}
+              role="status"
+              aria-live="polite"
+              layout
+              initial={{ opacity: 0, y: 16, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.15 } }}
+              transition={{ type: "spring", stiffness: 420, damping: 34 }}
+            >
+              <span>{t.text}</span>
+              <button aria-label="Fermer" className="toast-x" onClick={() => dismiss(t.id)}>×</button>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </Ctx.Provider>
   );

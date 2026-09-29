@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { LayoutDashboard, FileText, Building2, Palette, Bot, CreditCard, Menu, X, LogOut } from "lucide-react";
 import Logo from "./Logo.jsx";
+import { AnimatePresence, motion } from "motion/react";
 
 const ICON = { overview: LayoutDashboard, docs: FileText, company: Building2, model: Palette, bot: Bot, plan: CreditCard };
 
@@ -54,17 +55,27 @@ export default function DashboardShell({ brand, tabs, active, onSelect, onLogout
         </button>
       </aside>
 
-      {open && (
-        <div className="drawer-overlay" onClick={() => setOpen(false)}>
-          <aside className="drawer" role="dialog" aria-modal="true" aria-label="Menu" onClick={(e) => e.stopPropagation()}>
-            <div className="row" style={{ justifyContent: "space-between", padding: "0 16px", height: 64, borderBottom: "1px solid rgba(255,255,255,.1)" }}>
-              <Logo size={28} />
-              <button className="icon-btn" ref={closeRef} aria-label="Fermer le menu" onClick={() => setOpen(false)}><X size={20} /></button>
-            </div>
-            <div style={{ padding: 12 }}><NavItems tabs={tabs} active={active} onSelect={select} /></div>
-          </aside>
-        </div>
-      )}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="drawer-overlay"
+            onClick={() => setOpen(false)}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}
+          >
+            <motion.aside
+              className="drawer" role="dialog" aria-modal="true" aria-label="Menu" onClick={(e) => e.stopPropagation()}
+              initial={{ x: "-100%" }} animate={{ x: 0 }} exit={{ x: "-100%" }}
+              transition={{ type: "spring", stiffness: 340, damping: 34 }}
+            >
+              <div className="row" style={{ justifyContent: "space-between", padding: "0 16px", height: 64, borderBottom: "1px solid rgba(255,255,255,.1)" }}>
+                <Logo size={28} />
+                <button className="icon-btn" ref={closeRef} aria-label="Fermer le menu" onClick={() => setOpen(false)}><X size={20} /></button>
+              </div>
+              <div style={{ padding: 12 }}><NavItems tabs={tabs} active={active} onSelect={select} /></div>
+            </motion.aside>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <main className="content">{children}</main>
     </div>
