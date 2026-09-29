@@ -1,5 +1,6 @@
 import { handle, requireOrg, publicOrg, HttpError } from "@/lib/auth.js";
 import { db, must } from "@/lib/supabase.js";
+import { signedBrandingUrls } from "@/lib/branding.js";
 
 export const runtime = "nodejs";
 
@@ -22,7 +23,7 @@ export const POST = handle(async (req) => {
   const up = await bucket.upload(path, buf, { upsert: true, contentType: `image/${m[1]}` });
   if (up.error) throw new Error(up.error.message);
   const updated = must(await db().from("organizations").update({ [col]: path }).eq("id", org.id).select("*").single());
-  return Response.json(publicOrg(updated));
+  return Response.json({ ...publicOrg(updated), ...(await signedBrandingUrls(updated)) });
 });
 
 export const DELETE = handle(async (req) => {
@@ -31,5 +32,5 @@ export const DELETE = handle(async (req) => {
   if (!col) throw new HttpError(400, "Type inconnu.");
   if (org[col]) await db().storage.from("branding").remove([org[col]]);
   const updated = must(await db().from("organizations").update({ [col]: null }).eq("id", org.id).select("*").single());
-  return Response.json(publicOrg(updated));
+  return Response.json({ ...publicOrg(updated), ...(await signedBrandingUrls(updated)) });
 });

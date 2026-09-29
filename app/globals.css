@@ -125,7 +125,18 @@ main.wrap { padding-top: 24px; padding-bottom: 64px; }
 
 /* Modèle de document : studio */
 .studio { display: grid; gap: 24px; align-items: start; }
-@media (min-width: 860px) { .studio { grid-template-columns: 300px 1fr; } }
+@media (min-width: 980px) {
+  .studio { grid-template-columns: 340px 1fr; }
+  .studio-preview { position: sticky; top: 24px; }
+}
+.studio-controls .card { margin-bottom: 16px; }
+.tpl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.tpl-card { display: grid; gap: 8px; justify-items: center; background: var(--paper-white); border: 1.5px solid var(--rule); border-radius: var(--radius-sm); padding: 10px 8px 10px; cursor: pointer; font: inherit; color: inherit; }
+.tpl-card:hover { border-color: #b8c4e6; }
+.tpl-card[aria-checked="true"] { border-color: var(--blue); background: var(--blue-light); }
+.tpl-thumb { display: block; width: 100%; aspect-ratio: 120 / 156; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; background: #fff; }
+.custom-colors summary { cursor: pointer; font-weight: 650; color: var(--blue-deep); }
+.save-bar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .choice { display: grid; gap: 8px; }
 .choice button { text-align: left; font: inherit; color: inherit; background: var(--paper-white); border: 1px solid var(--rule); border-radius: var(--radius-sm); padding: 12px 14px; cursor: pointer; }
 .choice button[aria-pressed="true"] { border: 1.5px solid var(--blue); background: var(--blue-light); }
@@ -135,7 +146,7 @@ main.wrap { padding-top: 24px; padding-bottom: 64px; }
 .pal[aria-pressed="true"] { border: 1.5px solid var(--blue); background: var(--blue-light); }
 .pal i { width: 24px; height: 14px; border-radius: 999px; display: block; }
 .desk { background: var(--paper-deep); border: 1px solid var(--rule); border-radius: var(--radius); padding: 24px; display: grid; place-items: center; min-height: 320px; position: relative; }
-.sheet { width: min(100%, 560px); background: #fff; box-shadow: var(--shadow-md); display: block; border-radius: 4px; }
+.sheet { width: min(100%, 560px); background: #fff; box-shadow: var(--shadow-md); display: block; border-radius: 4px; transition: opacity .2s ease; }
 .desk .busy { position: absolute; top: 12px; right: 14px; font-size: .8rem; font-weight: 650; background: var(--navy); color: #fff; padding: 3px 10px; border-radius: 999px; }
 
 /* Paiements */

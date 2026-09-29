@@ -3,6 +3,7 @@ import { db, must } from "@/lib/supabase.js";
 import { randomToken } from "@/lib/crypto.js";
 import { TEMPLATE_META, DEFAULT_THEME } from "@/lib/meta.js";
 import { safeColor } from "@/lib/pdf/colors.js";
+import { signedBrandingUrls } from "@/lib/branding.js";
 
 export const runtime = "nodejs";
 
@@ -18,7 +19,7 @@ function cleanMethods(list) {
 
 export const GET = handle(async (req) => {
   const { org } = await requireOrg(req);
-  return Response.json(publicOrg(org));
+  return Response.json({ ...publicOrg(org), ...(await signedBrandingUrls(org)) });
 });
 
 export const PUT = handle(async (req) => {
@@ -46,7 +47,7 @@ export const PUT = handle(async (req) => {
     };
   }
   const updated = must(await db().from("organizations").update(patch).eq("id", org.id).select("*").single());
-  return Response.json(publicOrg(updated));
+  return Response.json({ ...publicOrg(updated), ...(await signedBrandingUrls(updated)) });
 });
 
 // Nouveau lien d'association : invalide l'ancien (utile pour ajouter un collaborateur).
@@ -55,5 +56,5 @@ export const POST = handle(async (req) => {
   const { action } = await req.json();
   if (action !== "new_claim_code") throw new HttpError(400, "Action inconnue.");
   const updated = must(await db().from("organizations").update({ claim_code: randomToken(8) }).eq("id", org.id).select("*").single());
-  return Response.json(publicOrg(updated));
+  return Response.json({ ...publicOrg(updated), ...(await signedBrandingUrls(updated)) });
 });

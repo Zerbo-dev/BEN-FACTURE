@@ -1,17 +1,20 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "@/lib/browser.js";
 import { useAction, busyLabel, shrinkImage } from "./ui.jsx";
 
-function ImageField({ kind, label, hint, max, has, onOrg }) {
+function ImageField({ kind, label, hint, max, url, has, onOrg }) {
   const { busy, run } = useAction();
-  const [preview, setPreview] = useState(null);
+  const [preview, setPreview] = useState(url || null);
+  // Reflète l'URL signée reçue du serveur (chargement initial, ou après une action menée ailleurs sur la page).
+  useEffect(() => { setPreview(url || null); }, [url]);
+
   async function pick(e) {
     const file = e.target.files?.[0];
     if (!file) return;
     await run(async () => {
       const dataUrl = await shrinkImage(file, max);
-      setPreview(dataUrl);
+      setPreview(dataUrl); // aperçu immédiat pendant l'envoi
       onOrg(await api("/api/upload", { method: "POST", body: { kind, dataUrl } }));
     }, "Image enregistrée.");
   }
@@ -24,7 +27,11 @@ function ImageField({ kind, label, hint, max, has, onOrg }) {
         <input type="file" accept="image/png,image/jpeg,image/webp" onChange={pick} disabled={busy} />
       </label>
       <div className="row">
-        {preview && <img src={preview} alt="" style={{ maxHeight: 56, maxWidth: 160, border: "1px solid var(--rule)" }} />}
+        {preview ? (
+          <img src={preview} alt={has ? `${label} actuel` : "Aperçu"} style={{ maxHeight: 64, maxWidth: 180, border: "1px solid var(--rule)", borderRadius: "var(--radius-sm)", background: "#fff", objectFit: "contain", padding: 4 }} />
+        ) : (
+          <span className="muted small">Aucune image pour l'instant.</span>
+        )}
         {has && <button type="button" className="btn small" onClick={remove} disabled={busy}>{busyLabel("Retirer", busy, "Suppression…")}</button>}
       </div>
     </div>
@@ -67,8 +74,8 @@ export default function CompanyForm({ org, onOrg }) {
           <input value={f.footer_text} onChange={set("footer_text")} />
         </label>
         <div className="grid2">
-          <ImageField kind="logo" label="Logo" hint="PNG ou JPEG, réduit automatiquement." max={320} has={org.has_logo} onOrg={onOrg} />
-          <ImageField kind="signature" label="Signature ou cachet" hint="Idéalement un PNG à fond transparent." max={400} has={org.has_signature} onOrg={onOrg} />
+          <ImageField kind="logo" label="Logo" hint="PNG ou JPEG, réduit automatiquement." max={320} url={org.logo_url} has={org.has_logo} onOrg={onOrg} />
+          <ImageField kind="signature" label="Signature ou cachet" hint="Idéalement un PNG à fond transparent." max={400} url={org.signature_url} has={org.has_signature} onOrg={onOrg} />
         </div>
       </section>
 
