@@ -1,22 +1,18 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { LayoutDashboard, FileText, Building2, Palette, Bot, CreditCard, Menu, X, LogOut } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 import Logo from "./Logo.jsx";
 import { AnimatePresence, motion } from "motion/react";
 
-const ICON = { overview: LayoutDashboard, docs: FileText, company: Building2, model: Palette, bot: Bot, plan: CreditCard };
-
+// tabs : [id, label, Icon][] — l'icône est fournie par l'appelant (dashboard client ou panneau admin).
 function NavItems({ tabs, active, onSelect }) {
   return (
-    <nav aria-label="Sections du tableau de bord">
-      {tabs.map(([id, label]) => {
-        const Icon = ICON[id];
-        return (
-          <button key={id} className="nav-item" aria-current={active === id ? "page" : undefined} onClick={() => onSelect(id)}>
-            <Icon size={18} strokeWidth={2} aria-hidden="true" /><span>{label}</span>
-          </button>
-        );
-      })}
+    <nav aria-label="Sections">
+      {tabs.map(([id, label, Icon]) => (
+        <button key={id} className="nav-item" aria-current={active === id ? "page" : undefined} onClick={() => onSelect(id)}>
+          <Icon size={18} strokeWidth={2} aria-hidden="true" /><span>{label}</span>
+        </button>
+      ))}
     </nav>
   );
 }
@@ -42,13 +38,13 @@ export default function DashboardShell({ brand, tabs, active, onSelect, onLogout
       <header className="topbar mobile-only">
         <div className="wrap">
           <button className="icon-btn" aria-label="Ouvrir le menu" aria-expanded={open} onClick={() => setOpen(true)}><Menu size={20} /></button>
-          <Logo size={28} />
+          <Logo size={28} name={brand} />
           <button className="icon-btn" aria-label="Se déconnecter" onClick={onLogout}><LogOut size={18} /></button>
         </div>
       </header>
 
       <aside className="side desktop-only">
-        <div style={{ padding: "0 18px", height: 64, display: "flex", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,.1)" }}><Logo size={30} /></div>
+        <div style={{ padding: "0 18px", height: 64, display: "flex", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,.1)" }}><Logo size={30} name={brand} /></div>
         <div style={{ padding: "14px 12px", flex: 1 }}><NavItems tabs={tabs} active={active} onSelect={onSelect} /></div>
         <button className="nav-item" style={{ margin: "12px", width: "calc(100% - 24px)" }} onClick={onLogout}>
           <LogOut size={18} strokeWidth={2} aria-hidden="true" /><span>Se déconnecter</span>
@@ -68,7 +64,7 @@ export default function DashboardShell({ brand, tabs, active, onSelect, onLogout
               transition={{ type: "spring", stiffness: 340, damping: 34 }}
             >
               <div className="row" style={{ justifyContent: "space-between", padding: "0 16px", height: 64, borderBottom: "1px solid rgba(255,255,255,.1)" }}>
-                <Logo size={28} />
+                <Logo size={28} name={brand} />
                 <button className="icon-btn" ref={closeRef} aria-label="Fermer le menu" onClick={() => setOpen(false)}><X size={20} /></button>
               </div>
               <div style={{ padding: 12 }}><NavItems tabs={tabs} active={active} onSelect={select} /></div>

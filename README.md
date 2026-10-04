@@ -46,6 +46,15 @@ Cron nuit ──► /api/cron/archive ──► Drive (.jsonl.gz + registre .csv
 5. Dans Telegram : `/devis`, `/facture`, `/proforma`, ou un message libre (« Devis pour M. Sawadogo, … Diagnostic 25000 »).
 6. Onglet **Aperçu** : documents et chiffre d'affaires du mois, activité des 8 dernières semaines, derniers documents.
 
+## Cache des aperçus de modèles
+
+`/api/preview` évite de regénérer le PDF + PNG à chaque appel pour les 6 palettes prédéfinies (× 3 modèles = 18
+combinaisons par organisation) : le résultat est mis en cache dans le bucket Storage `previews` (migration
+`003_preview_cache.sql`), sous une clé qui inclut une empreinte des champs qui influencent le rendu (logo, nom,
+adresse, paiements...) — modifiez votre profil et le cache se renouvelle tout seul, sans purge à gérer. Les couleurs
+personnalisées (sélecteur libre) ne sont jamais mises en cache : ce cas est plus rare et moins prévisible, elles
+continuent d'être générées à la volée.
+
 ## Corrections UX/UI (landing)
 
 - **Ancres sous la barre collante** : `scroll-padding-top` sur `html` — les liens "Comment ça marche" etc. ne
@@ -57,6 +66,55 @@ Cron nuit ──► /api/cron/archive ──► Drive (.jsonl.gz + registre .csv
   `opacity: 0` en attendant l'animation. Un repli `<noscript>` dans `app/layout.jsx` force leur visibilité si le
   JavaScript ne s'exécute pas (réseau qui coupe le chargement, script bloqué).
 - **Lien d'évitement** (`Aller au contenu`) pour la navigation clavier, visible seulement au focus.
+
+## Six améliorations complémentaires
+
+- **Limite de débit sur `/api/preview`** : 20 générations réelles (hors cache) par minute et par organisation
+  (`preview_rate_limits`, fonction SQL `bump_preview_rate`). Au-delà, erreur 429 claire plutôt qu'une facture
+  serveur qui grimpe silencieusement.
+- **Avertissement avant la coupure** : le bot prévient dans Telegram au document où il ne reste plus qu'un
+  document gratuit, puis au document qui atteint la limite — au lieu de laisser le client le découvrir en
+  bloquant sur le document suivant.
+- **Image de partage (Open Graph)** : `app/opengraph-image.jsx`, générée à la volée (next/og), sans dépendance
+  à une police externe ou à un emoji (rendu garanti). `metadataBase` (variable `APP_URL`) doit être correct en
+  production pour qu'elle s'affiche dans les aperçus de lien.
+- **Point de contrôle de santé public** : `GET /api/health`, sans authentification, pensé pour un service de
+  supervision externe (UptimeRobot ou équivalent) — renvoie 503 si la base est injoignable.
+- **Documents : filtre par période + pagination** (20 par page) en plus de la recherche par nom/numéro.
+- **Export CSV à la demande** (`/api/documents/export?from=&to=`), bouton dans l'onglet Documents — indépendant
+  de l'archivage automatique mensuel, pour une période choisie librement.
+
+## Fiabilité (webhooks, tests, cron)
+
+- **Déduplication des webhooks Telegram** : chaque `update_id` reçu est enregistré (table `processed_updates`,
+  migration `004_ops.sql`) ; un même update rejoué par Telegram (réseau coupé juste après notre réponse) est
+  ignoré au lieu de générer le document une seconde fois. Purgé automatiquement après 2 jours par le cron.
+- **Tests automatisés** (`npm test`, Node natif — `node --test`, aucune dépendance ajoutée) : 23 tests sur la
+  logique la plus sensible aux régressions silencieuses — calcul des totaux/TVA, couleurs des PDF (contraste,
+  repli), extraction du texte libre du bot, cohérence des modèles/palettes déclarés, clés du cache d'aperçu.
+  Portée assumée : logique pure uniquement — le flux complet du bot Telegram et les intégrations (Supabase,
+  Drive) ne sont pas couverts par des tests automatisés, seulement vérifiés manuellement pendant le développement.
+- **Historique du cron d'archivage** (table `cron_runs`) : chaque exécution nocturne enregistre son résultat
+  (succès/échec, détail), visible dans `/admin`. Si `ALERT_TELEGRAM_BOT_TOKEN` et `ALERT_TELEGRAM_CHAT_ID` sont
+  renseignés (un bot Telegram distinct des bots clients, pour vous seul), un échec envoie aussi un message —
+  sinon rien ne se passe, c'est facultatif.
+
+## Panneau admin (/admin)
+
+Réservé à l'équipe : accès limité aux e-mails listés dans `ADMIN_EMAILS` (séparés par des virgules), vérifié à
+la fois côté serveur (chaque route `/api/admin/*`) et côté client. Deux onglets :
+- **Organisations** : toutes les organisations, forfait, bot connecté, activité et chiffre d'affaires du mois —
+  avec un bouton pour **passer une organisation en forfait payant ou revenir au gratuit**, le seul geste manquant
+  pour que le paiement manuel (en attendant une intégration Mobile Money) soit vraiment utilisable au quotidien.
+- **Santé du cron** : les 20 dernières exécutions de l'archivage, succès ou échec en un coup d'œil.
+
+## Landing page (réécriture)
+
+Même contenu, réécrit proprement avec des animations pensées par section plutôt qu'un simple fondu générique :
+le bloc héros apparaît en cascade (badge → titre → texte → boutons → repères de confiance), l'illustration
+téléphone + carte de devis arrive avec un léger décalage, les grilles (étapes, fonctionnalités, tarifs) font
+apparaître leurs cartes une à une, et les cartes de fonctionnalités/tarifs réagissent légèrement au survol.
+Le repli `<noscript>` et `scroll-padding-top` du tour précédent sont conservés.
 
 ## Animations (motion.dev)
 

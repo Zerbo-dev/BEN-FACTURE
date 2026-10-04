@@ -9,8 +9,16 @@ import Documents from "@/components/Documents.jsx";
 import PlanPanel from "@/components/PlanPanel.jsx";
 import StatsPanel from "@/components/StatsPanel.jsx";
 import { AnimatePresence, motion } from "motion/react";
+import { LayoutDashboard, FileText, Building2, Palette, Bot, CreditCard } from "lucide-react";
 
-const TABS = [["overview", "Aperçu"], ["docs", "Documents"], ["company", "Entreprise"], ["model", "Modèle"], ["bot", "Bot Telegram"], ["plan", "Forfait"]];
+const TABS = [
+  ["overview", "Aperçu", LayoutDashboard],
+  ["docs", "Documents", FileText],
+  ["company", "Entreprise", Building2],
+  ["model", "Modèle", Palette],
+  ["bot", "Bot Telegram", Bot],
+  ["plan", "Forfait", CreditCard],
+];
 
 export default function Dashboard() {
   const [org, setOrg] = useState(null);

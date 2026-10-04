@@ -1,8 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
+import { motion } from "motion/react";
 import { supabase } from "@/lib/browser.js";
 import Logo from "@/components/Logo.jsx";
 import Reveal from "@/components/Reveal.jsx";
+import { StaggerGroup, StaggerItem } from "@/components/Stagger.jsx";
 import { FREE_MONTHLY_LIMIT } from "@/lib/meta.js";
 import {
   Zap, ShieldCheck, CheckCircle2, PlayCircle, Building2, Bot, Send, FileDown,
@@ -31,7 +33,11 @@ function Nav({ signedIn }) {
 /** Illustration de l'accueil : un téléphone (conversation Telegram) + un aperçu de document, en CSS pur. */
 function HeroVisual() {
   return (
-    <div className="hero-visual" aria-hidden="true">
+    <motion.div
+      className="hero-visual" aria-hidden="true" data-reveal=""
+      initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.6, delay: 0.25, ease: "easeOut" }}
+    >
       <div className="phone">
         <div className="phone-screen">
           <div className="phone-bar"><span className="logo-mark" style={{ width: 24, height: 24 }}><FileText size={14} /></span>Votre bot</div>
@@ -43,13 +49,17 @@ function HeroVisual() {
           </div>
         </div>
       </div>
-      <div className="doc-preview">
+      <motion.div
+        className="doc-preview"
+        initial={{ opacity: 0, rotate: 0, x: 24 }} animate={{ opacity: 1, rotate: 3, x: 0 }}
+        transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
+      >
         <div className="dp-head"><strong style={{ fontSize: ".85rem" }}>Facture</strong><span className="muted small">09/26</span></div>
         <div className="dp-row"><span>Câblage tableau</span><span>55 000</span></div>
         <div className="dp-row"><span>Prise 16A × 8</span><span>36 000</span></div>
         <div className="dp-total"><span>Total</span><span>91 000 FCFA</span></div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -89,20 +99,20 @@ export default function Landing() {
 
       <main id="main-content">
         <section className="hero wrap">
-          <div>
-            <span className="pill"><Send size={14} />Depuis Telegram</span>
-            <h1>Vos devis et factures.<br />Directement depuis <b>Telegram</b>.</h1>
-            <p className="lead">Créez un document professionnel en quelques secondes, envoyez-le à votre client, et gardez tout votre historique au même endroit.</p>
-            <div className="row">
+          <StaggerGroup onView={false} as="div">
+            <StaggerItem as="span" className="pill"><Send size={14} />Depuis Telegram</StaggerItem>
+            <StaggerItem as="h1">Vos devis et factures.<br />Directement depuis <b>Telegram</b>.</StaggerItem>
+            <StaggerItem as="p" className="lead">Créez un document professionnel en quelques secondes, envoyez-le à votre client, et gardez tout votre historique au même endroit.</StaggerItem>
+            <StaggerItem as="div" className="row">
               <a className="btn primary" href={cta}>{ctaLabel} →</a>
               <a className="btn" href="#comment-ca-marche"><PlayCircle size={17} />Voir comment ça marche</a>
-            </div>
-            <div className="trust">
+            </StaggerItem>
+            <StaggerItem as="div" className="trust">
               <span><Zap size={15} />Rapide</span>
               <span><ShieldCheck size={15} />Sécurisé</span>
               <span><CheckCircle2 size={15} />Simple à utiliser</span>
-            </div>
-          </div>
+            </StaggerItem>
+          </StaggerGroup>
           <HeroVisual />
         </section>
 
@@ -110,31 +120,31 @@ export default function Landing() {
           <p className="eyebrow">Comment ça marche</p>
           <h2>En 4 étapes simples</h2>
           <p className="muted" style={{ maxWidth: "54ch" }}>Créez votre entreprise, connectez votre bot Telegram, et envoyez vos commandes. Le reste se fait automatiquement.</p>
-          <div className="grid3" style={{ marginTop: 26 }}>
+          <StaggerGroup as="div" className="grid3" style={{ marginTop: 26 }}>
             {STEPS.map((s, i) => (
-              <div className="step" key={s.title}>
+              <StaggerItem as="div" className="step" key={s.title}>
                 <span className="step-no">{i + 1}</span>
                 <s.icon size={22} color="var(--blue-deep)" />
                 <h3>{s.title}</h3>
                 <p className="muted small">{s.desc}</p>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerGroup>
         </Reveal>
 
         <Reveal as="section" className="wrap" id="fonctionnalites">
           <p className="eyebrow">Fonctionnalités</p>
           <h2>Une facturation pensée pour les pros</h2>
           <p className="muted" style={{ maxWidth: "54ch" }}>Tout ce dont vous avez besoin pour gérer vos devis, factures et proformas, sans prise de tête.</p>
-          <div className="grid3" style={{ marginTop: 26 }}>
+          <StaggerGroup as="div" className="grid3" style={{ marginTop: 26 }}>
             {FEATURES.map((f) => (
-              <div className="feature-card" key={f.title}>
+              <StaggerItem as="div" className="feature-card" key={f.title} whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 300, damping: 22 }}>
                 <span className={`icon-badge ${f.color}`}><f.icon size={20} /></span>
                 <h3>{f.title}</h3>
                 <p className="muted small">{f.desc}</p>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerGroup>
         </Reveal>
 
         <Reveal as="section" className="wrap">
@@ -197,11 +207,11 @@ export default function Landing() {
                 <div className="bubble" style={{ background: "var(--green-light)", color: "var(--green-deep)", fontWeight: 650 }}>✓ Facture générée !</div>
               </div>
             </div>
-            <div className="cmds">
+            <StaggerGroup as="div" className="cmds">
               {COMMANDS.map(([c, d]) => (
-                <div className="cmd" key={c}><b>{c}</b><span className="muted small">{d}</span></div>
+                <StaggerItem as="div" className="cmd" key={c}><b>{c}</b><span className="muted small">{d}</span></StaggerItem>
               ))}
-            </div>
+            </StaggerGroup>
           </div>
         </Reveal>
 
@@ -209,8 +219,8 @@ export default function Landing() {
           <p className="eyebrow">Tarification</p>
           <h2>Une offre adaptée à vos besoins</h2>
           <p className="muted" style={{ maxWidth: "54ch" }}>Commencez gratuitement et passez au forfait payant quand votre activité grandit.</p>
-          <div className="grid2" style={{ marginTop: 26, maxWidth: 640 }}>
-            <div className="plan-card">
+          <StaggerGroup as="div" className="grid2" style={{ marginTop: 26, maxWidth: 640 }}>
+            <StaggerItem as="div" className="plan-card" whileHover={{ y: -3 }}>
               <h3>Gratuit</h3>
               <p className="muted small">Parfait pour démarrer</p>
               <p className="plan-price">0 FCFA</p>
@@ -220,8 +230,8 @@ export default function Landing() {
                 <li><Check size={16} />Archivage automatique</li>
               </ul>
               <a className="btn primary" href={cta} style={{ marginTop: 8 }}>Commencer gratuitement</a>
-            </div>
-            <div className="plan-card highlight">
+            </StaggerItem>
+            <StaggerItem as="div" className="plan-card highlight" whileHover={{ y: -3 }}>
               <h3>Payant</h3>
               <p className="muted small">Pour une activité régulière</p>
               <p className="plan-price">Sur devis</p>
@@ -231,12 +241,12 @@ export default function Landing() {
                 <li><Check size={16} />Support prioritaire</li>
               </ul>
               <a className="btn" style={{ marginTop: 8, background: "#fff" }} href={cta}>Nous contacter</a>
-            </div>
-          </div>
+            </StaggerItem>
+          </StaggerGroup>
         </Reveal>
       </main>
 
-      <div className="cta-band">
+      <Reveal as="div" className="cta-band">
         <div className="wrap">
           <div>
             <h2>Arrêtez de fabriquer vos factures une par une.</h2>
@@ -244,7 +254,7 @@ export default function Landing() {
           </div>
           <a className="btn primary" href={cta}>{ctaLabel} →</a>
         </div>
-      </div>
+      </Reveal>
       <footer className="foot">
         <div className="wrap">
           <Logo size={24} dark />

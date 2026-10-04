@@ -6,6 +6,8 @@ const name = process.env.APP_NAME || "BAG Facture";
 export const metadata = {
   title: name,
   description: "Devis, factures et proformas générés depuis Telegram, à vos couleurs.",
+  // Nécessaire pour que l'image Open Graph (app/opengraph-image.jsx) soit servie en URL absolue.
+  metadataBase: new URL(process.env.APP_URL || "http://localhost:3000"),
 };
 export const viewport = { width: "device-width", initialScale: 1 };
 
